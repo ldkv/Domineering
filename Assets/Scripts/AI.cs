@@ -60,7 +60,7 @@ public class AI : MonoBehaviour
         return logicBoard[id1] == TileStatus.EMPTY && logicBoard[id2] == TileStatus.EMPTY;    
     }
 
-    List<int> possibleMoves(TileStatus turn)
+    public List<int> possibleMoves(TileStatus turn)
     {
         List<int> moves = new List<int>();
         int i, j;
@@ -83,7 +83,6 @@ public class AI : MonoBehaviour
     {
         List<int> vertiMoves = possibleMoves(turn);
         List<int> horiMoves = possibleMoves((TileStatus)(-(int)turn));
-        int result = vertiMoves.Count - horiMoves.Count;
         return vertiMoves.Count - horiMoves.Count;
     }
 

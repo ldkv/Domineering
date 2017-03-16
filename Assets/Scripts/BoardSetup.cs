@@ -1,6 +1,6 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class BoardSetup : MonoBehaviour
 {
@@ -12,12 +12,19 @@ public class BoardSetup : MonoBehaviour
 
     private List<GameObject> tilesBoard;// List of all tiles
     private GameObject lastMove;
-    private int SIZE;
+
+
+    // Destroy the game board
+    public void DestroyBoard()
+    {
+        if (tilesBoard.Count > 0)
+            foreach (GameObject tile in tilesBoard)
+                Destroy(tile);
+    }
 
     // Create the game board
     public void GenerateBoard(int N)
     {
-        SIZE = N;
         float sizeTile = tilePrefab.GetComponent<SpriteRenderer>().bounds.size.x;
         
         // Initialise global variables
