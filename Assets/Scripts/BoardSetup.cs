@@ -7,10 +7,8 @@ public class BoardSetup : MonoBehaviour
     // Graphic objects
     public GameObject tilePrefab;
     public GameObject lastMovePrefab;
-    
     // Sprites
     public Sprite[] tileSprites;        // Color tile sprites - for changing tile color
-    public Sprite[] lastMoveSprites;    // color sprites for last move indicator
 
     private List<GameObject> tilesBoard;// List of all tiles
     private GameObject lastMove;
@@ -51,21 +49,6 @@ public class BoardSetup : MonoBehaviour
         // Create lastMove indicator
         lastMove = Instantiate(lastMovePrefab, Vector3.zero, Quaternion.identity) as GameObject;
         HidelastMove();
-    }
-
-    // Update the text bar color and its content
-    public void UpdateTurnGraphics(bool gameEnded, bool noMove, int turn)
-    {
-        if (gameEnded)
-        {
-        }
-        else if (noMove)
-        {
-        }
-        else
-        {
-            lastMove.GetComponent<SpriteRenderer>().sprite = lastMoveSprites[turn];
-        }
     }
 
     // Change tile color to the chosen one

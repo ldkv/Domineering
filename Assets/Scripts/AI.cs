@@ -38,6 +38,7 @@ public class AI : MonoBehaviour
                 logicBoard[i * N + j] = TileStatus.EMPTY;
     }
 
+    // Retourner l'indice du deuxième carreau (horizontal ou vertical)
     public int getNextIndex(int index, TileStatus turn)
     {
         if (index < 0)
@@ -86,30 +87,58 @@ public class AI : MonoBehaviour
         return vertiMoves.Count - horiMoves.Count;
     }
 
+    public int NegaMax(TileStatus turn, int depth, out int move)
+    {
+        move = -1;
+        // Condition d'arrêt
+        if (depth == 0)
+            return boardEvaluation(turn);
+        int eval = -INFINITY;
+        List<int> moves = possibleMoves(turn);
+        int bestMove = -1;
+        foreach (int m in moves)
+        {
+            int nextIndex = getNextIndex(m, turn);
+            // Jouer le coup
+            logicBoard[m] = turn;
+            logicBoard[nextIndex] = turn;
+            int e = -NegaMax((TileStatus)(-(int)turn), depth - 1, out bestMove);
+            // Déjouer le coup
+            logicBoard[m] = TileStatus.EMPTY;
+            logicBoard[nextIndex] = TileStatus.EMPTY;
+            if (e >= eval)
+            {
+                eval = e;
+                move = m;
+            }
+        }
+        return eval;
+
+    }
     public int MiniMax(TileStatus turn, int depth, out int move)
     {
         move = -1;
         // Condition d'arrêt
-        if (depth == 1)
+        if (depth == 0)
             return boardEvaluation(turn);
         int eval = turn == TileStatus.VERTICAL ? -INFINITY : INFINITY;
         List<int> moves = possibleMoves(turn);
-        int nbMoves = moves.Count;
         int bestMove = -1;
-        for (int i = 0; i < nbMoves; i++)
+        foreach (int m in moves)
         {
-            int nextIndex = getNextIndex(moves[i], turn);
+            int nextIndex = getNextIndex(m, turn);
             // Jouer le coup
-            logicBoard[moves[i]] = turn;
+            logicBoard[m] = turn;
             logicBoard[nextIndex] = turn;
             int e = MiniMax((TileStatus)(-(int)turn), depth - 1, out bestMove);
             // Déjouer le coup
-            logicBoard[moves[i]] = TileStatus.EMPTY;
+            logicBoard[m] = TileStatus.EMPTY;
             logicBoard[nextIndex] = TileStatus.EMPTY;
-            if ((turn == TileStatus.VERTICAL && e >= eval) || (turn == TileStatus.HORIZONTAL && e <= eval))
+            if ((turn == TileStatus.VERTICAL && e >= eval)
+                || (turn == TileStatus.HORIZONTAL && e <= eval))
             {
                 eval = e;
-                move = moves[i];
+                move = m;
             }
         }
         return eval;

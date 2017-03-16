@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
         if (AITurn())
         {
             bool turn = (currentTurn == TileStatus.VERTICAL) ? true : false;
-            logicBoard.MiniMax(currentTurn, AIDifficulty, out chosenTile);
+            logicBoard.NegaMax(currentTurn, AIDifficulty, out chosenTile);
             if (chosenTile == -1) // AI knows that it loses -> choose random move
             {
                 //chosenTile = logicBoard.FindMostFilledColumn();
