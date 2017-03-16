@@ -8,10 +8,9 @@ public class GameManager : MonoBehaviour
     private BoardSetup graphicBoard;
     private AI logicBoard;
     private const int noColor = 1;
-    private TileStatus currentTurn;         // Variable to track current turn and current color
-    private TileStatus AIColor;             // color controlled by AI
+    private TileStatus currentTurn; // Variable to track current turn and current color
     const int INFINITY = 1000000;
-    bool checkAITurn = true;
+    bool checkAITurn = true;        // true => check P1 is AI or not, false => check P2
 
     // UI
     public Slider sizeBoard;
@@ -20,8 +19,9 @@ public class GameManager : MonoBehaviour
     public Dropdown P1Dropdown;
     public Dropdown P2Dropdown;
     public Dropdown PieceDropdown;
-    public Text gameOverText;
     public Button bStart;
+    public Text gameOverText;
+    public Text timerText;
 
     // UI variables
     private static int N = 4;
@@ -34,18 +34,11 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Debug.Log(N);
-        Debug.Log(depthAI);
-        Debug.Log(typeAI);
-        Debug.Log(p2Choice);
-        Debug.Log(p1Choice);
-        Debug.Log(pieceChoice);
         UpdatePanelData();
         graphicBoard = GetComponent<BoardSetup>();
         logicBoard = GetComponent<AI>();
         currentTurn = TileStatus.EMPTY;
         gameOverText.text = "";
-       
     }
 
     // Sauvegarder les paramètres rentrés
@@ -57,31 +50,29 @@ public class GameManager : MonoBehaviour
         p1Choice = P1Dropdown.value;
         p2Choice = P2Dropdown.value;
         pieceChoice = PieceDropdown.value;
-        Debug.Log("GET");
     }
 
     // Sauvegarder les paramètres rentrés
     public void UpdatePanelData()
     {
-        sizeBoard.value = N;
-        difficultyAI.value = depthAI;
-        methodAI.value = typeAI;
-        P1Dropdown.value = p1Choice;
-        P2Dropdown.value = p2Choice;
-        PieceDropdown.value = pieceChoice;
-        Debug.Log("UPDATE");
-        Debug.Log(N);
-        Debug.Log(depthAI);
-        Debug.Log(typeAI);
-        Debug.Log(p2Choice);
-        Debug.Log(p1Choice);
-        Debug.Log(pieceChoice);
+        // Sauvegarder les données
+        int tN = N;
+        int tdepthAI = depthAI;
+        int ttypeAI = typeAI;
+        int tp1Choice = p1Choice;
+        int tp2Choice = p2Choice;
+        int tpieceChoice = pieceChoice;
+        // Mise à jour de l'UI
+        sizeBoard.value = tN;
+        difficultyAI.value = tdepthAI;
+        methodAI.value = ttypeAI;
+        P1Dropdown.value = tp1Choice;
+        P2Dropdown.value = tp2Choice;
+        PieceDropdown.value = tpieceChoice;
     }
 
     public void StartGame()
     {
-        //Restart();
-        Debug.Log("START");
         GetPanelData();
         // Generate the graphic board
         graphicBoard.GenerateBoard(N);
@@ -134,7 +125,11 @@ public class GameManager : MonoBehaviour
             return;
         if (AITurn())
         {
+            float timeStart = Time.realtimeSinceStartup;
             int chosenTile = moveAIMethods();
+            float timeExec = Time.realtimeSinceStartup - timeStart;
+            timeExec *= 1000;
+            timerText.text = timeExec.ToString("0.000") + "ms";
             if (chosenTile == -1) // AI knows that it loses -> choose random move
             {
                 GameOver();
