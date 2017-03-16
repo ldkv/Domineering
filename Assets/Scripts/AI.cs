@@ -113,8 +113,37 @@ public class AI : MonoBehaviour
             }
         }
         return eval;
-
     }
+
+    public int abNegaMax(TileStatus turn, int depth, int alpha, int beta, out int move)
+    {
+        move = -1;
+        // Condition d'arrêt
+        if (depth == 0)
+            return boardEvaluation(turn);
+        List<int> moves = possibleMoves(turn);
+        int bestMove = -1;
+        foreach (int m in moves)
+        {
+            int nextIndex = getNextIndex(m, turn);
+            // Jouer le coup
+            logicBoard[m] = turn;
+            logicBoard[nextIndex] = turn;
+            int e = -abNegaMax((TileStatus)(-(int)turn), depth - 1, -alpha, -beta, out bestMove);
+            // Déjouer le coup
+            logicBoard[m] = TileStatus.EMPTY;
+            logicBoard[nextIndex] = TileStatus.EMPTY;
+            if (e >= alpha)
+            {
+                alpha = e;
+                move = m;
+                if (alpha >= beta)
+                    return beta;
+            }
+        }
+        return alpha;
+    }
+
     public int MiniMax(TileStatus turn, int depth, out int move)
     {
         move = -1;

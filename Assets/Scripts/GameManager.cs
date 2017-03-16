@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviour
     private TileStatus currentTurn;         // Variable to track current turn and current color
     private TileStatus AIColor;             // color controlled by AI
     public int AIDifficulty = 3;
-    
+    const int INFINITY = 1000000;
+
     // Variables to track moves
     private int chosenTile;
     private bool first_AI_Move = true;
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour
         if (AITurn())
         {
             bool turn = (currentTurn == TileStatus.VERTICAL) ? true : false;
-            logicBoard.NegaMax(currentTurn, AIDifficulty, out chosenTile);
+            logicBoard.abNegaMax(currentTurn, AIDifficulty, -INFINITY, INFINITY, out chosenTile);
             if (chosenTile == -1) // AI knows that it loses -> choose random move
             {
                 //chosenTile = logicBoard.FindMostFilledColumn();
@@ -104,16 +105,12 @@ public class GameManager : MonoBehaviour
     // Check if mouse input is valid - return -1 if not
     private int GetTileSelected()
     {
-        // On Left Mouse Click
-        //if (Input.GetMouseButtonDown(0))
-        //{
         // Specify the ray to be casted from the position of the mouse
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hitInfo = Physics2D.Raycast(ray.origin, Vector2.zero, 0f);
         // Raycast and verify that it collided
         if (hitInfo)
             return graphicBoard.TileChosen(hitInfo.collider.gameObject);
-        //}
         return -1;
     }
 }
