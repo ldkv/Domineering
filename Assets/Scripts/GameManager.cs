@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
         // Generate the graphic board
         graphicBoard.GenerateBoard(N);
         // Generate the logic board
-        logicBoard.InitLogicBoard(N);
+        logicBoard.InitLogicBoard(N, depthAI);
         currentTurn = (TileStatus)(pieceChoice * 2 - 1);
         checkAITurn = true;
         bStart.interactable = false;

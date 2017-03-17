@@ -29,8 +29,9 @@ public class AI : MonoBehaviour
     // Initialization of status grid of the board
     // ATTENTION: board initialized with (0,0) at top left corner
     //            and (N, N) at bottom right corner
-    public void InitLogicBoard(int N)
+    public void InitLogicBoard(int N, int difficulty)
     {
+        maxDepth = difficulty;
         SIZE = N;
         logicBoard = new TileStatus[N * N];
         for (int i = 0; i < N; i++)
@@ -122,17 +123,19 @@ public class AI : MonoBehaviour
             return boardEvaluation(turn);
         List<int> moves = possibleMoves(turn);
         int bestMove = -1;
+        if (moves.Count > 0)
+            move = moves[0];
         foreach (int m in moves)
         {
             int nextIndex = getNextIndex(m, turn);
             // Jouer le coup
             logicBoard[m] = turn;
             logicBoard[nextIndex] = turn;
-            int e = -abNegaMax((TileStatus)(-(int)turn), depth - 1, -alpha, -beta, out bestMove);
+            int e = -abNegaMax((TileStatus)(-(int)turn), depth - 1, -beta, -alpha, out bestMove);
             // Déjouer le coup
             logicBoard[m] = TileStatus.EMPTY;
             logicBoard[nextIndex] = TileStatus.EMPTY;
-            if (e >= alpha)
+            if (e > alpha)
             {
                 alpha = e;
                 move = m;
