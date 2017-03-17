@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        UpdatePanelData();
         graphicBoard = GetComponent<BoardSetup>();
         logicBoard = GetComponent<AI>();
+        UpdatePanelData();
         currentTurn = TileStatus.EMPTY;
         gameOverText.text = "";
     }
@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
         p1Choice = P1Dropdown.value;
         p2Choice = P2Dropdown.value;
         pieceChoice = PieceDropdown.value;
+        //logicBoard.initKillerList(depthAI);
     }
 
     // Sauvegarder les paramètres rentrés
@@ -108,7 +109,7 @@ public class GameManager : MonoBehaviour
                 logicBoard.abNegaMax(currentTurn, depthAI, -INFINITY, INFINITY, out chosenMove);
                 break;
             case 2:
-                logicBoard.initKillerList(depthAI);
+                //logicBoard.initKillerList(depthAI);
                 logicBoard.abNegaMax_HeurTueur(currentTurn, depthAI, -INFINITY, INFINITY, out chosenMove);
                 break;
             case 3:
