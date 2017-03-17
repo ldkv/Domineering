@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: e036a58acd1336940ba4383843ab3ba9
+timeCreated: 1489742546
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Baby Kruffy
+  fontNames:
+  - Baby Kruffy
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
