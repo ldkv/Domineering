@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 61ae564e884e1704c886e5b1f871d1dd
-timeCreated: 1489742694
+guid: 885d0065ba623c648aeb88a998a4ee81
+timeCreated: 1489750149
 licenseType: Free
 TrueTypeFontImporter:
   serializedVersion: 4
@@ -9,9 +9,9 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Bryant
+  fontName: Life is goofy
   fontNames:
-  - Bryant
+  - Life is goofy
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
