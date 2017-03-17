@@ -113,6 +113,7 @@ public class GameManager : MonoBehaviour
                 logicBoard.abNegaMax_HeurTueur(currentTurn, depthAI, -INFINITY, INFINITY, out chosenMove);
                 break;
             case 3:
+                logicBoard.abNegaMax_HeurHistory(currentTurn, depthAI, -INFINITY, INFINITY, out chosenMove);
                 break;
             default:
                 break;

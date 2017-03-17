@@ -69,10 +69,12 @@ public class AI : MonoBehaviour
         return logicBoard[id1] == TileStatus.EMPTY && logicBoard[id2] == TileStatus.EMPTY;    
     }
 
+    int count = 0;
     public List<int> possibleMoves(TileStatus turn)
     {
         List<int> moves = new List<int>();
         int i, j;
+        //count++;
         if (turn == TileStatus.VERTICAL)
         {
             for (i = 0; i < SIZE - 1; i++)
@@ -98,6 +100,8 @@ public class AI : MonoBehaviour
     public int NegaMax(TileStatus turn, int depth, out int move)
     {
         move = -1;
+        //if (depth == maxDepth)
+            //count = 0;
         // Condition d'arrêt
         if (depth == 0)
             return boardEvaluation(turn);
@@ -121,6 +125,11 @@ public class AI : MonoBehaviour
                 move = m;
             }
         }
+       // if (depth == maxDepth)
+        //{
+         //   Debug.Log("HERE" + count);
+           // count = 0;
+        //}
         return eval;
     }
 
@@ -180,6 +189,7 @@ public class AI : MonoBehaviour
             int temp = moves[index];
             moves[index] = moves[0];
             moves[0] = temp;
+            //Debug.Log("YES");
         }
         int bestMove = -1;
         if (moves.Count > 0)
@@ -190,7 +200,7 @@ public class AI : MonoBehaviour
             // Jouer le coup
             logicBoard[m] = turn;
             logicBoard[nextIndex] = turn;
-            int e = -abNegaMax((TileStatus)(-(int)turn), depth - 1, -beta, -alpha, out bestMove);
+            int e = -abNegaMax_HeurTueur((TileStatus)(-(int)turn), depth - 1, -beta, -alpha, out bestMove);
             // Déjouer le coup
             logicBoard[m] = TileStatus.EMPTY;
             logicBoard[nextIndex] = TileStatus.EMPTY;
@@ -198,7 +208,7 @@ public class AI : MonoBehaviour
             {
                 alpha = e;
                 move = m;
-                killer[maxDepth - depth] = m;
+                //killer[maxDepth - depth] = m;
                 if (alpha >= beta)
                 {
                     killer[maxDepth - depth] = m;
@@ -217,6 +227,7 @@ public class AI : MonoBehaviour
         for (int i = 0; i < difficulty; i++)
             killer.Add(-1);
     }
+   
     public int abNegaMax_HeurHistory(TileStatus turn, int depth, int alpha, int beta, out int move)
     {
         move = -1;
@@ -230,6 +241,7 @@ public class AI : MonoBehaviour
             int temp = moves[index];
             moves[index] = moves[0];
             moves[0] = temp;
+            //Debug.Log("YES");
         }
         int bestMove = -1;
         if (moves.Count > 0)
@@ -240,7 +252,7 @@ public class AI : MonoBehaviour
             // Jouer le coup
             logicBoard[m] = turn;
             logicBoard[nextIndex] = turn;
-            int e = -abNegaMax((TileStatus)(-(int)turn), depth - 1, -beta, -alpha, out bestMove);
+            int e = -abNegaMax_HeurHistory((TileStatus)(-(int)turn), depth - 1, -beta, -alpha, out bestMove);
             // Déjouer le coup
             logicBoard[m] = TileStatus.EMPTY;
             logicBoard[nextIndex] = TileStatus.EMPTY;
@@ -248,6 +260,7 @@ public class AI : MonoBehaviour
             {
                 alpha = e;
                 move = m;
+                //killer[maxDepth - depth] = m;
                 if (alpha >= beta)
                 {
                     killer[maxDepth - depth] = m;
@@ -258,6 +271,7 @@ public class AI : MonoBehaviour
         }
         return alpha;
     }
+
 
     /*public int MiniMax(TileStatus turn, int depth, out int move)
     {
