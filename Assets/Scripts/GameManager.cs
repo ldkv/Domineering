@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
-using System.Threading;
-using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -98,34 +95,28 @@ public class GameManager : MonoBehaviour
         currentTurn = TileStatus.EMPTY;
     }
 
-    int chosenMove = -1;
-    void moveAIMethods()
+    int moveAIMethods()
     {
-        chosenMove = -1;
-        try
+        int chosenMove = -1;
+        switch (typeAI)
         {
-            switch (typeAI)
-            {
-                case 0:
-                    logicBoard.NegaMax(currentTurn, depthAI, out chosenMove);
-                    //logicBoard.MiniMax(currentTurn, depthAI, out chosenMose);
-                    break;
-                case 1:
-                    logicBoard.abNegaMax(currentTurn, depthAI, -INFINITY, INFINITY, out chosenMove);
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                default:
-                    break;
-            }
+            case 0:
+                logicBoard.NegaMax(currentTurn, depthAI, out chosenMove);
+                //logicBoard.MiniMax(currentTurn, depthAI, out chosenMose);
+                break;
+            case 1:
+                logicBoard.abNegaMax(currentTurn, depthAI, -INFINITY, INFINITY, out chosenMove);
+                break;
+            case 2:
+                logicBoard.initKillerList(depthAI);
+                logicBoard.abNegaMax_HeurTueur(currentTurn, depthAI, -INFINITY, INFINITY, out chosenMove);
+                break;
+            case 3:
+                break;
+            default:
+                break;
         }
-        catch (ThreadAbortException)
-        {
-            Debug.Log("Temps d'exécution trop long pour l'IA, baisser le profondeur ! ");
-        }
-       
+        return chosenMove;
     }
 
     int lastIndex = -1;
@@ -136,48 +127,24 @@ public class GameManager : MonoBehaviour
             return;
         if (AITurn())
         {
-            int timeLimit = 10; // seconds
-            chosenMove = -1;
             float timeStart = Time.realtimeSinceStartup;
-            Thread t = new Thread(moveAIMethods);
-            t.Start();
-            if (!t.Join(TimeSpan.FromSeconds(timeLimit)))
+            int chosenTile = moveAIMethods();
+            float timeExec = Time.realtimeSinceStartup - timeStart;
+            timeExec *= 1000;
+            timerText.text = timeExec.ToString("0.000") + "ms";
+            if (chosenTile == -1) // AI knows that it loses -> choose random move
             {
-                t.Abort();
-                Debug.Log("Temps d'exécution trop long pour l'IA, baisser le profondeur ! ");
-                float timeExec = Time.realtimeSinceStartup - timeStart;
-                timeExec *= 1000;
-                timerText.text = timeExec.ToString("0.000") + "ms";
-
-                //int chosenTile = moveAIMethods();           
-                if (chosenMove == -1) // AI knows that it loses -> choose random move
-                {
-                    List<int> moves = logicBoard.possibleMoves(currentTurn);
-                    if (moves.Count > 0)
-                        chosenMove = moves[0];
-                    else
-                    {
-                        GameOver();
-                        return;
-                    }
-                }
-                int nextIndex = logicBoard.getNextIndex(chosenMove, currentTurn);
-                UpdateTiles(chosenMove, nextIndex);
-                graphicBoard.PlacelastMove(chosenMove);
-                checkAITurn = !checkAITurn;
-                currentTurn = currentTurn == TileStatus.VERTICAL ? TileStatus.HORIZONTAL : TileStatus.VERTICAL;
-                //throw new Exception("More than " + timeLimit + " secs.");
+                GameOver();
+                return;
             }
-/*                int nextIndex = logicBoard.getNextIndex(chosenMove, currentTurn);
-                UpdateTiles(chosenMove, nextIndex);
-                graphicBoard.PlacelastMove(chosenMove);
-                checkAITurn = !checkAITurn;
-                currentTurn = currentTurn == TileStatus.VERTICAL ? TileStatus.HORIZONTAL : TileStatus.VERTICAL;
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit();
-#endif*/
+            else
+            {
+                int nextIndex = logicBoard.getNextIndex(chosenTile, currentTurn);
+                UpdateTiles(chosenTile, nextIndex);
+                graphicBoard.PlacelastMove(chosenTile);
+            }
+            checkAITurn = !checkAITurn;
+            currentTurn = currentTurn == TileStatus.VERTICAL ? TileStatus.HORIZONTAL : TileStatus.VERTICAL;
         }
         else
         {

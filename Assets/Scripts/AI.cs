@@ -14,7 +14,8 @@ public class AI : MonoBehaviour
     private static int SIZE = 8;
     const int INFINITY = 1000000;
     int maxDepth = 4;
-    
+    List<int> killer;
+
     private TileStatus[] logicBoard = null;
     
     public void SetTileValue(int index, TileStatus val)
@@ -31,8 +32,9 @@ public class AI : MonoBehaviour
     //            and (N, N) at bottom right corner
     public void InitLogicBoard(int N, int difficulty)
     {
-        maxDepth = difficulty;
         SIZE = N;
+        maxDepth = difficulty;
+        initKillerList(difficulty);
         logicBoard = new TileStatus[N * N];
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++)
@@ -141,11 +143,65 @@ public class AI : MonoBehaviour
                 alpha = e;
                 move = m;
                 if (alpha >= beta)
+                {
+                    move = m;
                     return beta;
+                }
             }
         }
         return alpha;
     }
+
+    public void initKillerList(int difficulty)
+    {
+        maxDepth = difficulty;
+        killer = new List<int>();
+        for (int i = 0; i < difficulty; i++)
+            killer.Add(-1);
+    }
+
+    public int abNegaMax_HeurTueur(TileStatus turn, int depth, int alpha, int beta, out int move)
+    {
+        move = -1;
+        // Condition d'arrêt
+        if (depth == 0)
+            return boardEvaluation(turn);
+        List<int> moves = possibleMoves(turn);
+        int index = moves.FindIndex(m => m == killer[maxDepth - depth]);
+        if (index >= 0)
+        {
+            int temp = moves[index];
+            moves[index] = moves[0];
+            moves[0] = temp;
+        }
+        int bestMove = -1;
+        if (moves.Count > 0)
+            move = moves[0];
+        foreach (int m in moves)
+        {
+            int nextIndex = getNextIndex(m, turn);
+            // Jouer le coup
+            logicBoard[m] = turn;
+            logicBoard[nextIndex] = turn;
+            int e = -abNegaMax((TileStatus)(-(int)turn), depth - 1, -beta, -alpha, out bestMove);
+            // Déjouer le coup
+            logicBoard[m] = TileStatus.EMPTY;
+            logicBoard[nextIndex] = TileStatus.EMPTY;
+            if (e > alpha)
+            {
+                alpha = e;
+                move = m;
+                if (alpha >= beta)
+                {
+                    killer[maxDepth - depth] = m;
+                    move = m;
+                    return beta;
+                }
+            }
+        }
+        return alpha;
+    }
+
 
     /*public int MiniMax(TileStatus turn, int depth, out int move)
     {
