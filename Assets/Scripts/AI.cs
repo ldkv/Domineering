@@ -20,8 +20,7 @@ public class AI : MonoBehaviour
     const int INFINITY = 1000000;
     int maxDepth = 4;
     List<int> killer;
-    int[,] history;
-
+    
     private TileStatus[] logicBoard = null;
     
     public void SetTileValue(int index, TileStatus val)
@@ -45,6 +44,7 @@ public class AI : MonoBehaviour
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++)
                 logicBoard[i * N + j] = TileStatus.EMPTY;
+        initHistoryTable();
     }
 
     // Retourner l'indice du deuxième carreau (horizontal ou vertical)
@@ -69,7 +69,6 @@ public class AI : MonoBehaviour
         return logicBoard[id1] == TileStatus.EMPTY && logicBoard[id2] == TileStatus.EMPTY;    
     }
 
-    int count = 0;
     public List<int> possibleMoves(TileStatus turn)
     {
         List<int> moves = new List<int>();
@@ -176,6 +175,8 @@ public class AI : MonoBehaviour
         Debug.Log("Reset killer Count = " + killer.Count);
     }
 
+    //List<int> history;
+
     public int abNegaMax_HeurTueur(TileStatus turn, int depth, int alpha, int beta, out int move)
     {
         move = -1;
@@ -220,14 +221,16 @@ public class AI : MonoBehaviour
         return alpha;
     }
 
-    public void initHistoryTable(int difficulty)
+    Dictionary<int, int> history;
+    public void initHistoryTable()
     {
-        maxDepth = difficulty;
-        killer = new List<int>();
-        for (int i = 0; i < difficulty; i++)
-            killer.Add(-1);
+        history = new Dictionary<int, int>();
+        for (int i = 0; i < logicBoard.Length; i++)
+        {
+            history.Add(i, 0);
+        }
     }
-   
+
     public int abNegaMax_HeurHistory(TileStatus turn, int depth, int alpha, int beta, out int move)
     {
         move = -1;
@@ -235,14 +238,25 @@ public class AI : MonoBehaviour
         if (depth == 0)
             return boardEvaluation(turn);
         List<int> moves = possibleMoves(turn);
-        int index = moves.FindIndex(m => m == killer[maxDepth - depth]);
-        if (index >= 0)
+        List<int> rating = new List<int>();
+        foreach (int m in moves)
         {
-            int temp = moves[index];
-            moves[index] = moves[0];
-            moves[0] = temp;
-            //Debug.Log("YES");
+            rating.Add(history[m]);
         }
+        int nbMoves = rating.Count;
+        
+        for (int i = 0; i < nbMoves - 1; i++)
+            for (int j = i + 1; j < nbMoves; j++)
+                if (rating[j] > rating[i])
+                {
+                    int r = rating[j];
+                    rating[j] = rating[i];
+                    rating[i] = r;
+                    int m = moves[j];
+                    moves[j] = moves[i];
+                    moves[i] = m;
+                }
+
         int bestMove = -1;
         if (moves.Count > 0)
             move = moves[0];
@@ -263,7 +277,7 @@ public class AI : MonoBehaviour
                 //killer[maxDepth - depth] = m;
                 if (alpha >= beta)
                 {
-                    killer[maxDepth - depth] = m;
+                    history[m] += (int)Mathf.Pow(4, depth);
                     move = m;
                     return beta;
                 }
