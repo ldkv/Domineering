@@ -95,6 +95,7 @@ public class AI : MonoBehaviour
             return boardEvaluation(turn);
         int eval = -INFINITY;
         List<int> moves = possibleMoves(turn);
+
         int bestMove = -1;
         foreach (int m in moves)
         {
@@ -146,7 +147,7 @@ public class AI : MonoBehaviour
         return alpha;
     }
 
-    public int MiniMax(TileStatus turn, int depth, out int move)
+    /*public int MiniMax(TileStatus turn, int depth, out int move)
     {
         move = -1;
         // Condition d'arrêt
@@ -154,6 +155,8 @@ public class AI : MonoBehaviour
             return boardEvaluation(turn);
         int eval = turn == TileStatus.VERTICAL ? -INFINITY : INFINITY;
         List<int> moves = possibleMoves(turn);
+        if (moves.Count > 0)
+            move = moves[0];
         int bestMove = -1;
         foreach (int m in moves)
         {
@@ -173,5 +176,5 @@ public class AI : MonoBehaviour
             }
         }
         return eval;
-    }
+    }*/
 }
